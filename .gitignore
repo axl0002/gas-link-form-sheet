@@ -1,0 +1,10 @@
+# Google token json
+token.json
+credentials.json
+
+
+# Dependency directories
+node_modules/
+
+# dotenv environment variables file
+.env
