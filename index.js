@@ -197,6 +197,8 @@ function callAppsScript(auth) {
 
   const script = google.script({ version: 'v1', auth });
   const scriptId = process.env.SCRIPT_ID;
+  const deploymentId = process.env.DEPLOYMENT_ID;
+
   console.log(scriptId);
   script.projects.updateContent({
     scriptId: scriptId,
@@ -235,11 +237,22 @@ function callAppsScript(auth) {
         return console.log('The API version create returned an error: ' + err);
       }
       console.log('version create success');
-      script.projects.deployments.create({
+      // script.projects.deployments.create({
+      //   scriptId: scriptId,
+      //   auth: auth,
+      //   resource: {
+      //     versionNumber: res.data.versionNumber,
+      //   }
+      // }, {}, (err, res) => {
+
+      script.projects.deployments.update({
         scriptId: scriptId,
+        deploymentId: deploymentId,
         auth: auth,
         resource: {
-          versionNumber: res.data.versionNumber,
+          "deploymentConfig": {
+            "versionNumber": res.data.versionNumber,
+          }
         }
       }, {}, (err, res) => {
         // console.log(scriptId);
@@ -251,6 +264,7 @@ function callAppsScript(auth) {
           return console.log('The API deployments create returned an error: ' + err);
         }
         console.log('deployment success');
+        console.log(res.data.deploymentId)
         console.log(res.data.deploymentConfig)
         console.log(res.data.deploymentConfig.scriptId)
 
