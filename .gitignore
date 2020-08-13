@@ -1,7 +1,7 @@
 # Google token json
 token.json
 credentials.json
-
+sa-credentials.json
 
 # Dependency directories
 node_modules/

@@ -79,228 +79,154 @@ function getAccessToken(oAuth2Client, callback) {
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
 function callAppsScript(auth) {
-  // const script = google.script({ version: 'v1', auth });
-  // script.projects.create({
-  //   resource: {
-  //     title: 'My Script',
-  //   },
-  // }, (err, res) => {
-  //   if (err) return console.log(`The API create method returned an error: ${err}`);
-  //   console.log('script created');
-  //   const scriptId = res.data.scriptId;
-  //   script.projects.updateContent({
-  //     scriptId: res.data.scriptId,
-  //     auth,
-  //     resource: {
-  //       files: [{
-  //         name: 'hello',
-  //         type: 'SERVER_JS',
-  //         source: 'function myFunction() {\n var form = FormApp.create(\'New Form\');\n var item = form.addTextItem();\n item.setTitle(\'Shortcode\');\n Logger.log(\'Published URL: \' + form.getPublishedUrl());\n Logger.log(\'Editor URL: \' + form.getEditUrl());\n }',
-  //       }, {
-  //         name: 'appsscript',
-  //         type: 'JSON',
-  //         source: '{\"timeZone\":\"America/New_York\","executionApi": {"access": "ANYONE"},\"exceptionLogging\":' +
-  //           '\"CLOUD\"}',
-  //       }],
-  //     },
-  //   }, {}, (err, res) => {
-  //     if (err) return console.log(`The API updateContent method returned an error: ${err}`);
-  //     console.log('content updated')
-  //     console.log(`https://script.google.com/d/${res.data.scriptId}/edit`);
-  //     console.log(scriptId);
 
+  const script = google.script({ version: 'v1', auth });
+  const scriptId = process.env.SCRIPT_ID;
+  const deploymentId = process.env.DEPLOYMENT_ID;
 
-  //     script.projects.versions.create({
-  //       scriptId: scriptId,
-  //       auth: auth,
-  //       resource: {
-  //         versionNumber: 1,
-  //       }
-  //     }, {}, (err, res) => {
-  //       console.log(scriptId);
-  //       console.log('this' + res.data.versionNumber);
+  console.log(scriptId);
+  script.projects.updateContent({
+    scriptId: scriptId,
+    auth,
+    resource: {
+      files: [{
+        name: 'hello',
+        type: 'SERVER_JS',
+        source: 'function myFunction() {\n var form = FormApp.create(\'New Form\');\n var item = form.addTextItem();\n item.setTitle(\'Shortcode\');\n  var sheet = SpreadsheetApp.create("Responses", 50, 5); \n sheet.addEditor("sa-eventmanager@event-manager-cl-1597328691488.iam.gserviceaccount.com");\n form.setDestination(FormApp.DestinationType.SPREADSHEET, sheet.getId()); \n Logger.log(\'Published URL: \' + form.getPublishedUrl());\n Logger.log(\'Editor URL: \' + form.getEditUrl());\n   var res = {\'formResLink\' : form.getPublishedUrl(), \'formEditLink\' : form .getEditUrl(), \'sheetId\' : sheet.getId() }; \n return res;\n }',
+      }, {
+        name: 'appsscript',
+        type: 'JSON',
+        source: '{\"timeZone\":\"America/New_York\","executionApi": {"access": "ANYONE"},\"exceptionLogging\":' +
+          '\"CLOUD\"}',
+      }],
+    },
+  }, {}, (err, res) => {
+    if (err) return console.log(`The API updateContent method returned an error: ${err}`);
+    console.log('content updated')
+    console.log(`https://script.google.com/d/${res.data.scriptId}/edit`);
 
-
-  //       if (err) {
-  //         // The API encountered a problem before the script started executing.
-  //         return console.log('The API version create returned an error: ' + err);
-  //       }
-  //       console.log('version create success');
-  //       script.projects.deployments.create({
-  //         scriptId: scriptId,
-  //         auth: auth,
-  //         resource: {
-  //           versionNumber: res.data.versionNumber,
-  //         }
-  //       }, {}, (err, res) => {
-  //         // console.log(scriptId);
-  //         // console.log(auth);
-
-
-  //         if (err) {
-  //           // The API encountered a problem before the script started executing.
-  //           return console.log('The API deployments create returned an error: ' + err);
-  //         }
-  //         console.log('deployment success');
-  //         console.log(res.data.deploymentConfig)
-  //         console.log(res.data.deploymentConfig.scriptId)
-
-  //         script.projects.deployments.update({
-  //           deploymentId: res.data.deploymentId,
-  //           scriptId: res.data.deploymentConfig.scriptId,
-  //           auth: auth,
-  //         }, {}, (err, res) => {
-  //           // console.log(scriptId);
-  //           // console.log(auth);
-
-
-  //           if (err) {
-  //             // The API encountered a problem before the script started executing.
-  //             return console.log('The API deployments update returned an error: ' + err);
-  //           }
-
-  //           console.log('update success')
-
-
-
-  //           script.scripts.run({
-  //             scriptId: res.data.deploymentConfig.scriptId,
-  //             auth,
-  //             resource: {
-  //               function: 'myFunction',
-  //               // devMode: true,
-  //             },
-  //           }, {}, (err, res) => {
-  //             console.log(scriptId);
-  //             // console.log(auth);
-
-
-  //             if (err) {
-  //               // The API encountered a problem before the script started executing.
-  //               return console.log('The API scripts run returned an error: ' + err);
-  //             }
-  //             console.log('success');
-  //           });
-
-
-  //         });
-  //       });
-  //     });
-  //   });
-  //   // console.log(auth);
-
-  //   // });
-
-    const script = google.script({ version: 'v1', auth });
-    const scriptId = process.env.SCRIPT_ID;
-    const deploymentId = process.env.DEPLOYMENT_ID;
-
-    console.log(scriptId);
-    script.projects.updateContent({
+    script.projects.versions.create({
       scriptId: scriptId,
-      auth,
+      auth: auth,
       resource: {
-        files: [{
-          name: 'hello',
-          type: 'SERVER_JS',
-          source: 'function myFunction() {\n var form = FormApp.create(\'New Form\');\n var item = form.addTextItem();\n item.setTitle(\'Shortcode\');\n  var sheet = SpreadsheetApp.create("Responses", 50, 5); \n form.setDestination(FormApp.DestinationType.SPREADSHEET, sheet.getId()); \n Logger.log(\'Published URL: \' + form.getPublishedUrl());\n Logger.log(\'Editor URL: \' + form.getEditUrl());\n   var res = {\'formResLink\' : form.getPublishedUrl(), \'formEditLink\' : form .getEditUrl(), \'sheetId\' : sheet.getId() }; \n return res;\n }',
-        }, {
-          name: 'appsscript',
-          type: 'JSON',
-          source: '{\"timeZone\":\"America/New_York\","executionApi": {"access": "ANYONE"},\"exceptionLogging\":' +
-            '\"CLOUD\"}',
-        }],
-      },
+        versionNumber: 1,
+      }
     }, {}, (err, res) => {
-      if (err) return console.log(`The API updateContent method returned an error: ${err}`);
-      console.log('content updated')
-      console.log(`https://script.google.com/d/${res.data.scriptId}/edit`);
+      console.log(scriptId);
+      console.log('this' + res.data.versionNumber);
 
-      script.projects.versions.create({
+
+      if (err) {
+        // The API encountered a problem before the script started executing.
+        return console.log('The API version create returned an error: ' + err);
+      }
+      console.log('version create success');
+      // script.projects.deployments.create({
+      //   scriptId: scriptId,
+      //   auth: auth,
+      //   resource: {
+      //     versionNumber: res.data.versionNumber,
+      //   }
+      // }, {}, (err, res) => {
+
+      script.projects.deployments.update({
         scriptId: scriptId,
+        deploymentId: deploymentId,
         auth: auth,
         resource: {
-          versionNumber: 1,
+          "deploymentConfig": {
+            "versionNumber": res.data.versionNumber,
+          }
         }
       }, {}, (err, res) => {
-        console.log(scriptId);
-        console.log('this' + res.data.versionNumber);
 
 
         if (err) {
           // The API encountered a problem before the script started executing.
-          return console.log('The API version create returned an error: ' + err);
+          return console.log('The API deployments create returned an error: ' + err);
         }
-        console.log('version create success');
-        // script.projects.deployments.create({
-        //   scriptId: scriptId,
-        //   auth: auth,
-        //   resource: {
-        //     versionNumber: res.data.versionNumber,
-        //   }
-        // }, {}, (err, res) => {
+        console.log('deployment success');
+        console.log(res.data.deploymentId)
+        console.log(res.data.deploymentConfig)
+        console.log(res.data.deploymentConfig.scriptId)
 
-        script.projects.deployments.update({
+
+        script.scripts.run({
           scriptId: scriptId,
-          deploymentId: deploymentId,
-          auth: auth,
+          auth,
           resource: {
-            "deploymentConfig": {
-              "versionNumber": res.data.versionNumber,
-            }
-          }
+            function: 'myFunction',
+            devMode: true,
+          },
         }, {}, (err, res) => {
 
 
           if (err) {
             // The API encountered a problem before the script started executing.
-            return console.log('The API deployments create returned an error: ' + err);
+            return console.log('The API scripts run returned an error: ' + err);
           }
-          console.log('deployment success');
-          console.log(res.data.deploymentId)
-          console.log(res.data.deploymentConfig)
-          console.log(res.data.deploymentConfig.scriptId)
-
-
-          script.scripts.run({
-            scriptId: scriptId,
-            auth,
-            resource: {
-              function: 'myFunction',
-              devMode: true,
-            },
-          }, {}, (err, res) => {
-
-
-            if (err) {
-              // The API encountered a problem before the script started executing.
-              return console.log('The API scripts run returned an error: ' + err);
-            }
-            console.log(res.data.response.result);
-            console.log('success');
-          });
+          console.log(res.data.response.result);
+          // saveItemInFolder(res.data.response.result.SHEET_ID)
+          console.log('success');
         });
       });
     });
-  }
+  });
+}
 
 
-  const spreadsheetId = process.env.SHEET_ID
-  function readSheet(auth) {
-    const sheets = google.sheets({version: 'v4', auth});
-    sheets.spreadsheets.values.get({
-      spreadsheetId: spreadsheetId,
-      range: 'A1:B4',
-    }, (err, res) => {
-      if (err) return console.log('The API returned an error: ' + err);
-      const rows = res.data.values;
-      if (rows.length) {
-        // Print columns A and B, which correspond to indices 0 and 1.
-        rows.map((row) => {
-          console.log(`${row[0]}, ${row[1]}`);
-        });
-      } else {
-        console.log('No data found.');
-      }
-    });
-  }
+// using google sheets api
+
+const spreadsheetId = process.env.SHEET_ID
+function readSheet(auth) {
+  const sheets = google.sheets({ version: 'v4', auth });
+  sheets.spreadsheets.values.get({
+    spreadsheetId: spreadsheetId,
+    range: 'A1:B4',
+  }, (err, res) => {
+    if (err) return console.log('The API returned an error: ' + err);
+    const rows = res.data.values;
+    if (rows.length) {
+      // Print columns A and B, which correspond to indices 0 and 1.
+      rows.map((row) => {
+        console.log(`${row[0]}, ${row[1]}`);
+      });
+    } else {
+      console.log('No data found.');
+    }
+  });
+}
+
+//using npm google-sheets
+async function read() {
+  const { GoogleSpreadsheet } = require('google-spreadsheet');
+
+  // spreadsheet key is the long id in the sheets URL
+  const doc = new GoogleSpreadsheet('1hBVGgEA8G_8rHXZ165mWRtDcnPrkuRPyrWHk__Y1ThQ');
+
+  // OR load directly from json file if not in secure environment
+  await doc.useServiceAccountAuth(require('./sa-credentials.json'));
+  // OR use API key -- only for read-only access to public sheets
+  // doc.useApiKey('YOUR-API-KEY');
+
+  await doc.loadInfo(); // loads document properties and worksheets
+  console.log(doc.title);
+  // await doc.updateProperties({ title: 'renamed doc' });
+
+  const sheet = doc.sheetsByIndex[0]; // or use doc.sheetsById[id]
+  console.log(sheet.title);
+  console.log(sheet.rowCount);
+  // read cells
+  await sheet.loadCells('A1:B4');
+
+  // read/write cell values
+  const a1 = sheet.getCell(0, 0); // access cells using a zero-based index
+  const b2 = sheet.getCellByA1('B2'); // or A1 style notation
+  // access everything about the cell
+  console.log(a1.value);
+  console.log(a1.formula);
+  console.log(a1.formattedValue);
+  console.log(b2.value)
+
+
+}
